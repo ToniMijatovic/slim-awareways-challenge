@@ -1,0 +1,40 @@
+version: '3.8'
+# Docker Networks
+networks:
+  slim:
+services:
+  app:
+    # If you're using Mac with ARM architecture processor add uncomment the below code
+    #platform: linux/amd64
+    build:
+      dockerfile: ./.docker/Dockerfile
+      context: ./
+    volumes:
+      - ./app:/var/www/html/app
+      - ./.env:/var/www/html/.env
+      - ./public:/var/www/html/public
+      - ./database:/var/www/html/database
+      - ./routes:/var/www/html/routes
+    ports:
+      - 9101:80
+    networks:
+      - slim
+  # Database Service
+  mysql:
+    # If you're using Mac with ARM architecture processor add uncomment the below code
+    #platform: linux/x86_64
+    image : mysql
+    container_name : mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: awareways
+      MYSQL_USER: awareways
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - slim
